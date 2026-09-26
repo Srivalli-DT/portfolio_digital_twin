@@ -8,13 +8,14 @@ type TitleCardProps = {
   // Shown one after another in the same spot. The first line is the big one.
   lines: readonly string[];
   onDone: () => void;
+  // Seconds each line stays fully visible.
+  hold?: number;
 };
 
 const FADE_SECONDS = 0.9;
-const HOLD_SECONDS = 2;
 
 // Transition 2, the title card: serif lines fade in and out on black. Click or any key skips it.
-export default function TitleCard({ lines, onDone }: TitleCardProps) {
+export default function TitleCard({ lines, onDone, hold = 2 }: TitleCardProps) {
   const lineRefs = useRef<(HTMLParagraphElement | null)[]>([]);
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export default function TitleCard({ lines, onDone }: TitleCardProps) {
       if (!line) return;
       timeline
         .fromTo(line, { opacity: 0 }, { opacity: 1, duration: FADE_SECONDS, ease: EASE_FADE })
-        .to(line, { opacity: 0, duration: FADE_SECONDS, ease: EASE_FADE }, `+=${HOLD_SECONDS}`);
+        .to(line, { opacity: 0, duration: FADE_SECONDS, ease: EASE_FADE }, `+=${hold}`);
     });
 
     window.addEventListener('keydown', finish);
@@ -42,7 +43,7 @@ export default function TitleCard({ lines, onDone }: TitleCardProps) {
       window.removeEventListener('keydown', finish);
       window.removeEventListener('pointerdown', finish);
     };
-  }, [lines, onDone]);
+  }, [lines, onDone, hold]);
 
   return (
     <div className={styles.card} role="presentation">

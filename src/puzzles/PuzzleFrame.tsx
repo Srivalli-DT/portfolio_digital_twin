@@ -23,6 +23,7 @@ export default function PuzzleFrame({
   const solved = useFilm((state) => state.solved.includes(reel));
   const solvePuzzle = useFilm((state) => state.solvePuzzle);
   const closePuzzle = useFilm((state) => state.closePuzzle);
+  const playReel = useFilm((state) => state.playReel);
   const showHint = useFilm((state) => state.showHint);
 
   // Stuck for a while? The crow offers a hint once (SPEC section 6).
@@ -58,8 +59,8 @@ export default function PuzzleFrame({
 
       <footer className={styles.bottom}>
         {solved ? (
-          <button className={styles.action} onClick={closePuzzle}>
-            {puzzleText.backToField}
+          <button className={styles.action} onClick={() => playReel(reel)} autoFocus>
+            {puzzleText.playReel}
           </button>
         ) : (
           <>

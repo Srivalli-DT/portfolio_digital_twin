@@ -6,8 +6,7 @@ export const puzzleText = {
   skip: 'skip scene →',
   askHint: 'ask {crow} for a hint',
   close: 'close puzzle',
-  backToField: 'back to field',
-  solvedHeading: 'solved',
+  playReel: 'play reel →',
 };
 
 export const focusPuzzle = {

@@ -9,7 +9,7 @@ import { shots, type ShotName } from './shots';
 const DOLLY_SECONDS = 2.5;
 
 // Transition 3, the dolly: whenever the store's `shot` changes, glide the camera there.
-// With reduced motion on, it cuts to black and jumps instead.
+// With reduced motion on (or shotMode 'cut'), it jumps instead.
 export default function CameraRig() {
   const camera = useThree((state) => state.camera);
   const shot = useFilm((state) => state.shot);
@@ -30,7 +30,8 @@ export default function CameraRig() {
       camera.lookAt(lookAt.current);
     };
 
-    if (isFirstShot) {
+    // First placement, or the store asked for a cut (it happens while the screen is black).
+    if (isFirstShot || useFilm.getState().shotMode === 'cut') {
       jump();
       return;
     }

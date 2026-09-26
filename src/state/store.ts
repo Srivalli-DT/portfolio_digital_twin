@@ -11,8 +11,9 @@ type Progress = { solved: ReelId[]; watched: ReelId[] };
 
 type FilmState = {
   scene: Scene;
-  // Camera shot the CameraRig dollies to.
+  // Camera shot the CameraRig moves to, and how: a smooth dolly or an instant cut (during black).
   shot: ShotName;
+  shotMode: 'dolly' | 'cut';
   // true = 2.39:1 cinema bars, false = full frame.
   letterbox: boolean;
   activeReel: ReelId | null;
@@ -33,6 +34,8 @@ type FilmState = {
   hopCount: number;
   // Where the plain cut's back button returns to.
   plainReturn: 'slate' | 'field';
+  // The reel whose "REEL I" title card is showing (before the reel plays).
+  reelCard: ReelId | null;
 
   enter: (withSound: boolean) => void;
   startField: () => void;
@@ -53,6 +56,9 @@ type FilmState = {
   failAttempt: () => void;
   showHint: () => void;
   setFocus: (value: number) => void;
+  playReel: (reel: ReelId) => void;
+  beginReel: () => void;
+  closeReel: () => void;
   escape: () => void;
 };
 
@@ -65,6 +71,7 @@ const savedProgress = load<Progress>('progress', { solved: [], watched: [] });
 export const useFilm = create<FilmState>()((set, get) => ({
   scene: 'slate',
   shot: 'wide',
+  shotMode: 'dolly',
   letterbox: false,
   activeReel: null,
   solved: savedProgress.solved,
@@ -78,6 +85,7 @@ export const useFilm = create<FilmState>()((set, get) => ({
   talking: false,
   hopCount: 0,
   plainReturn: 'slate',
+  reelCard: null,
 
   // Slate → title card. The slate simply disappears: a cut on black.
   enter: (withSound) => set({ sound: withSound, scene: 'title' }),
@@ -88,6 +96,7 @@ export const useFilm = create<FilmState>()((set, get) => ({
       scene: 'field',
       letterbox: true,
       shot: 'field',
+      shotMode: 'dolly',
       flickerCount: state.flickerCount + 1,
     }));
     fadeFromBlack();
@@ -103,11 +112,12 @@ export const useFilm = create<FilmState>()((set, get) => ({
       scene: 'credits',
       letterbox: false,
       shot: 'sky',
+      shotMode: 'dolly',
       activeReel: null,
       dialogueNode: null,
       talking: false,
     }),
-  closeCredits: () => set({ scene: 'field', letterbox: true, shot: 'field' }),
+  closeCredits: () => set({ scene: 'field', letterbox: true, shot: 'field', shotMode: 'dolly' }),
 
   openPlain: () => {
     const plainReturn = get().scene === 'slate' ? 'slate' : 'field';
@@ -118,7 +128,7 @@ export const useFilm = create<FilmState>()((set, get) => ({
   closePlain: () =>
     cutToBlack(() => {
       const scene = get().plainReturn;
-      if (scene === 'field') set({ scene, shot: 'field', letterbox: true });
+      if (scene === 'field') set({ scene, shot: 'field', shotMode: 'cut', letterbox: true });
       else set({ scene });
     }),
 
@@ -147,10 +157,16 @@ export const useFilm = create<FilmState>()((set, get) => ({
   startPuzzle: (reel) => {
     const { scene } = get();
     if (scene !== 'field' && scene !== 'puzzle') return;
+    // Already solved? Go straight to the reel (keeps the recruiter path short).
+    if (get().solved.includes(reel)) {
+      get().playReel(reel);
+      return;
+    }
     set({
       scene: 'puzzle',
       activeReel: reel,
       shot: 'projector',
+      shotMode: 'dolly',
       dialogueNode: null,
       talking: false,
       hintsShown: 0,
@@ -159,7 +175,14 @@ export const useFilm = create<FilmState>()((set, get) => ({
     });
   },
   closePuzzle: () =>
-    set({ scene: 'field', activeReel: null, shot: 'field', dialogueNode: null, talking: false }),
+    set({
+      scene: 'field',
+      activeReel: null,
+      shot: 'field',
+      shotMode: 'dolly',
+      dialogueNode: null,
+      talking: false,
+    }),
 
   // Solving (or skipping) marks the reel solved; the crow hops and the projector flickers.
   solvePuzzle: () => {
@@ -185,11 +208,53 @@ export const useFilm = create<FilmState>()((set, get) => ({
   },
   setFocus: (value) => set({ focus: Math.min(100, Math.max(0, value)) }),
 
-  // Esc closes the topmost thing: the chat, then a puzzle, then credits or the plain cut.
+  // Puzzle → "REEL I" title card (App shows it while reelCard is set) → beginReel.
+  playReel: (reel) => {
+    const { scene } = get();
+    if (scene !== 'field' && scene !== 'puzzle') return;
+    set({ reelCard: reel, activeReel: reel, dialogueNode: null, talking: false });
+  },
+  // Title card done: cut to the sheet, flicker the projector on, fade up from black.
+  beginReel: () => {
+    if (!get().reelCard) return;
+    set((state) => ({
+      scene: 'reel',
+      shot: 'sheet',
+      shotMode: 'cut',
+      reelCard: null,
+      flickerCount: state.flickerCount + 1,
+    }));
+    fadeFromBlack(1);
+  },
+  // Hard cut back to the field and mark the reel watched. The last new reel rolls the credits.
+  closeReel: () => {
+    const reel = get().activeReel;
+    if (get().scene !== 'reel' || !reel) return;
+    cutToBlack(() => {
+      const before = get().watched;
+      const watched = before.includes(reel) ? before : [...before, reel];
+      const justFinished = before.length < 3 && watched.length === 3;
+      if (justFinished) {
+        set({
+          watched,
+          scene: 'credits',
+          letterbox: false,
+          shot: 'sky',
+          shotMode: 'cut',
+          activeReel: null,
+        });
+      } else {
+        set({ watched, scene: 'field', shot: 'field', shotMode: 'cut', activeReel: null });
+      }
+    });
+  },
+
+  // Esc closes the topmost thing: the chat, then a puzzle or reel, then credits or the plain cut.
   escape: () => {
     const { dialogueNode, scene } = get();
     if (dialogueNode) get().closeDialogue();
     else if (scene === 'puzzle') get().closePuzzle();
+    else if (scene === 'reel') get().closeReel();
     else if (scene === 'credits') get().closeCredits();
     else if (scene === 'plain') get().closePlain();
   },

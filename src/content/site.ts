@@ -38,6 +38,10 @@ export const site = {
     menuLabel: 'questions for the crow',
   },
 
+  reel: {
+    close: 'close reel',
+  },
+
   credits: {
     heading: 'Written & directed by',
     placeholder: 'The full credits roll arrives in Phase 6.',
