@@ -4,7 +4,7 @@ import { puzzleText } from './content/puzzles';
 import { site } from './content/site';
 import PuzzleOverlay from './puzzles/PuzzleOverlay';
 import Stage from './scene/Stage';
-import { useFilm } from './state/store';
+import { useFilm, WEBGL } from './state/store';
 import CutOverlay from './ui/CutOverlay';
 import Dialogue from './ui/Dialogue';
 import Header from './ui/Header';
@@ -50,7 +50,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <Stage />
+      {WEBGL && <Stage />}
       <Letterbox />
       {SCENES_WITH_HEADER.includes(scene) && <Header />}
       {scene === 'puzzle' && !reelCard && <PuzzleOverlay />}

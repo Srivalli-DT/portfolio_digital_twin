@@ -21,14 +21,14 @@ function smoothing(speed: number, delta: number) {
 
 // All the crow's procedural motion. Everything happens by mutating objects in useFrame; no React state.
 // Parts are found by NAME, so a real GLB with the same part names works without code changes.
-export function useCrowBehaviour(root: RefObject<Group | null>) {
+export function useCrowBehaviour(rootRef: RefObject<Group | null>) {
   const parts = useRef<Parts | null>(null);
   // Head tilt: 0 (level) or ±CURIOUS_TILT, switched at random times.
   const tilt = useRef({ target: 0, nextChange: 4 });
   const hopCount = useFilm((state) => state.hopCount);
 
   useEffect(() => {
-    const crow = root.current;
+    const crow = rootRef.current;
     if (!crow) return;
     const find = (name: string) => {
       const part = crow.getObjectByName(name);
@@ -41,11 +41,11 @@ export function useCrowBehaviour(root: RefObject<Group | null>) {
       beakUpper: find('Beak_Upper'),
       beakLower: find('Beak_Lower'),
     };
-  }, [root]);
+  }, [rootRef]);
 
   // A small hop (up quick, down soft) each time hopCount goes up.
   useEffect(() => {
-    const crow = root.current;
+    const crow = rootRef.current;
     if (!crow || hopCount === 0) return;
     const baseY = crow.position.y;
     const timeline = gsap
@@ -56,7 +56,7 @@ export function useCrowBehaviour(root: RefObject<Group | null>) {
       timeline.kill();
       crow.position.y = baseY;
     };
-  }, [hopCount, root]);
+  }, [hopCount, rootRef]);
 
   useFrame((state, delta) => {
     const crow = parts.current;

@@ -5,6 +5,7 @@ import { useFilm } from '../state/store';
 import { CROW_POSITION } from './layout';
 import { palette } from './palette';
 import { useCrowBehaviour } from './useCrowBehaviour';
+import { useCrowFlight } from './useCrowFlight';
 
 // The crow faces +z, so its left wing is on the +x side.
 const WINGS = [
@@ -18,6 +19,7 @@ const WINGS = [
 export default function Crow() {
   const root = useRef<Group>(null);
   useCrowBehaviour(root);
+  useCrowFlight(root);
   const crowClicked = useFilm((state) => state.crowClicked);
 
   // Clicking the crow opens the questions, or gives a hint during a puzzle.

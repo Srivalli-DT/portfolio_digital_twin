@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { focusPuzzle, HINT_AFTER_FAILS } from '../content/puzzles';
 import { load, save } from '../lib/storage';
 import { cutToBlack, fadeFromBlack } from '../lib/transitions';
+import { hasWebGL } from '../lib/webgl';
 import type { ShotName } from '../scene/shots';
 
 export type Scene = 'slate' | 'title' | 'field' | 'puzzle' | 'reel' | 'credits' | 'plain';
@@ -36,6 +37,8 @@ type FilmState = {
   plainReturn: 'slate' | 'field';
   // The reel whose "REEL I" title card is showing (before the reel plays).
   reelCard: ReelId | null;
+  // True once the crow has flown off at the end of the credits.
+  flownAway: boolean;
 
   enter: (withSound: boolean) => void;
   startField: () => void;
@@ -59,17 +62,22 @@ type FilmState = {
   playReel: (reel: ReelId) => void;
   beginReel: () => void;
   closeReel: () => void;
+  endFilm: () => void;
+  replay: () => void;
   escape: () => void;
 };
 
 // Wait for the arrival dolly to finish before the crow speaks.
 const GREETING_DELAY_MS = 2800;
 
+// Checked once at startup. Without WebGL the site opens on the plain cut and never draws 3D.
+export const WEBGL = hasWebGL();
+
 const savedProgress = load<Progress>('progress', { solved: [], watched: [] });
 
 // The one store. Components read from it; only these actions change `scene`.
 export const useFilm = create<FilmState>()((set, get) => ({
-  scene: 'slate',
+  scene: WEBGL ? 'slate' : 'plain',
   shot: 'wide',
   shotMode: 'dolly',
   letterbox: false,
@@ -86,6 +94,7 @@ export const useFilm = create<FilmState>()((set, get) => ({
   hopCount: 0,
   plainReturn: 'slate',
   reelCard: null,
+  flownAway: false,
 
   // Slate → title card. The slate simply disappears: a cut on black.
   enter: (withSound) => set({ sound: withSound, scene: 'title' }),
@@ -116,8 +125,14 @@ export const useFilm = create<FilmState>()((set, get) => ({
       activeReel: null,
       dialogueNode: null,
       talking: false,
+      flownAway: false,
     }),
-  closeCredits: () => set({ scene: 'field', letterbox: true, shot: 'field', shotMode: 'dolly' }),
+  closeCredits: () => {
+    const back = { scene: 'field', letterbox: true, shot: 'field' } as const;
+    // If the crow has flown off, bring it back while the screen is black.
+    if (get().flownAway) cutToBlack(() => set({ ...back, shotMode: 'cut', flownAway: false }));
+    else set({ ...back, shotMode: 'dolly' });
+  },
 
   openPlain: () => {
     const plainReturn = get().scene === 'slate' ? 'slate' : 'field';
@@ -128,8 +143,9 @@ export const useFilm = create<FilmState>()((set, get) => ({
   closePlain: () =>
     cutToBlack(() => {
       const scene = get().plainReturn;
-      if (scene === 'field') set({ scene, shot: 'field', shotMode: 'cut', letterbox: true });
-      else set({ scene });
+      if (scene === 'field') {
+        set({ scene, shot: 'field', shotMode: 'cut', letterbox: true, flownAway: false });
+      } else set({ scene });
     }),
 
   toggleSound: () => set((state) => ({ sound: !state.sound })),
@@ -248,6 +264,26 @@ export const useFilm = create<FilmState>()((set, get) => ({
       }
     });
   },
+
+  // End of the credits: the crow flies off and "fin." appears (Credits shows it).
+  endFilm: () => {
+    if (get().scene === 'credits') set({ flownAway: true });
+  },
+  // Watch again from the title card, with progress cleared.
+  replay: () =>
+    cutToBlack(() =>
+      set({
+        scene: 'title',
+        solved: [],
+        watched: [],
+        flownAway: false,
+        letterbox: false,
+        shot: 'wide',
+        shotMode: 'cut',
+        activeReel: null,
+        dialogueNode: null,
+      }),
+    ),
 
   // Esc closes the topmost thing: the chat, then a puzzle or reel, then credits or the plain cut.
   escape: () => {
