@@ -1,0 +1,11 @@
+/* The only colours and fonts on the site. --lamp is the single accent. */
+:root {
+  --ink: #0d0c0a;
+  --bone: #e9e3d6;
+  --fog: #6f7468;
+  --moss: #3b4032;
+  --lamp: #d9a441;
+
+  --font-serif: 'EB Garamond', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
