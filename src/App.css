@@ -2,22 +2,3 @@
   position: relative;
   height: 100%;
 }
-
-.app__canvas {
-  position: absolute;
-  inset: 0;
-}
-
-/* Sits above the canvas; ignores clicks so the 3D scene still gets them later. */
-.app__hello {
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  display: grid;
-  place-items: center;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 2rem;
-  color: var(--bone);
-  pointer-events: none;
-}
