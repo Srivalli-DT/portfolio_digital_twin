@@ -1,0 +1,16 @@
+.talk {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 20;
+  min-height: 44px;
+  transform: translateX(-50%);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.talk:hover {
+  color: var(--lamp);
+}

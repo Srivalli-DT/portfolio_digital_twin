@@ -22,6 +22,10 @@ type FilmState = {
   hintsShown: number;
   // Goes up by one each time the projector should flicker on. Projector watches it.
   flickerCount: number;
+  // True while a subtitle is typing out: the crow's beak moves.
+  talking: boolean;
+  // Goes up by one each time the crow should hop. The crow watches it.
+  hopCount: number;
   // Where the plain cut's back button returns to.
   plainReturn: 'slate' | 'field';
 
@@ -32,7 +36,15 @@ type FilmState = {
   openPlain: () => void;
   closePlain: () => void;
   toggleSound: () => void;
+  openDialogue: (nodeId?: string) => void;
+  chooseOption: (next: string) => void;
+  closeDialogue: () => void;
+  setTalking: (talking: boolean) => void;
+  hop: () => void;
 };
+
+// Wait for the arrival dolly to finish before the crow speaks.
+const GREETING_DELAY_MS = 2800;
 
 const savedProgress = load<Progress>('progress', { solved: [], watched: [] });
 
@@ -48,6 +60,8 @@ export const useFilm = create<FilmState>()((set, get) => ({
   dialogueNode: null,
   hintsShown: 0,
   flickerCount: 0,
+  talking: false,
+  hopCount: 0,
   plainReturn: 'slate',
 
   // Slate → title card. The slate simply disappears: a cut on black.
@@ -62,19 +76,37 @@ export const useFilm = create<FilmState>()((set, get) => ({
       flickerCount: state.flickerCount + 1,
     }));
     fadeFromBlack();
+    // The crow greets the visitor once the camera has settled (unless they already started talking).
+    window.setTimeout(() => {
+      if (get().scene === 'field' && get().dialogueNode === null) set({ dialogueNode: 'arrival' });
+    }, GREETING_DELAY_MS);
   },
 
   // Field → credits: bars open to full frame while the camera tilts up to the sky.
-  openCredits: () => set({ scene: 'credits', letterbox: false, shot: 'sky' }),
+  openCredits: () =>
+    set({ scene: 'credits', letterbox: false, shot: 'sky', dialogueNode: null, talking: false }),
   closeCredits: () => set({ scene: 'field', letterbox: true, shot: 'field' }),
 
   openPlain: () => {
     const plainReturn = get().scene === 'slate' ? 'slate' : 'field';
-    cutToBlack(() => set({ scene: 'plain', plainReturn }));
+    cutToBlack(() => set({ scene: 'plain', plainReturn, dialogueNode: null, talking: false }));
   },
   closePlain: () => cutToBlack(() => set({ scene: get().plainReturn })),
 
   toggleSound: () => set((state) => ({ sound: !state.sound })),
+
+  // The crow only talks in the field.
+  openDialogue: (nodeId = 'menu') => {
+    if (get().scene === 'field') set({ dialogueNode: nodeId });
+  },
+  chooseOption: (next) => {
+    if (next === 'close') get().closeDialogue();
+    else if (next === 'credits') get().openCredits();
+    else set({ dialogueNode: next });
+  },
+  closeDialogue: () => set({ dialogueNode: null, talking: false }),
+  setTalking: (talking) => set({ talking }),
+  hop: () => set((state) => ({ hopCount: state.hopCount + 1 })),
 }));
 
 // Remember progress and the sound choice between visits.

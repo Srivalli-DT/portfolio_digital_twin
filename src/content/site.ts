@@ -4,6 +4,8 @@ const NAME = 'Srivalli';
 export const site = {
   name: NAME,
   filmTitle: 'The Field',
+  // The crow is my digital twin: it speaks as me. Its lines are in dialogue.ts.
+  crowName: 'Wick',
 
   slate: {
     tagline: 'a film in three reels',
@@ -24,6 +26,14 @@ export const site = {
     plainCut: 'plain cut',
     // Read by screen readers instead of the ● ○ ○ marks. {n} is replaced with the count.
     progressLabel: '{n} of 3 reels watched',
+  },
+
+  dialogue: {
+    // {crow} is replaced with crowName.
+    talk: 'talk to {crow}',
+    // Read by screen readers on the subtitle button.
+    continueLabel: 'continue',
+    menuLabel: 'questions for the crow',
   },
 
   credits: {

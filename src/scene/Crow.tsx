@@ -1,7 +1,10 @@
-import { useMemo } from 'react';
-import { MeshStandardMaterial } from 'three';
+import { useMemo, useRef } from 'react';
+import type { ThreeEvent } from '@react-three/fiber';
+import { MeshStandardMaterial, type Group } from 'three';
+import { useFilm } from '../state/store';
 import { CROW_POSITION } from './layout';
 import { palette } from './palette';
+import { useCrowBehaviour } from './useCrowBehaviour';
 
 // The crow faces +z, so its left wing is on the +x side.
 const WINGS = [
@@ -13,6 +16,19 @@ const WINGS = [
 // Body, Head, Beak_Upper, Beak_Lower, Wing_L and Wing_R by name. Keep them for the real GLB.
 // Each named part is a group placed at its pivot (e.g. the beak hinge), with the mesh inside.
 export default function Crow() {
+  const root = useRef<Group>(null);
+  useCrowBehaviour(root);
+  const openDialogue = useFilm((state) => state.openDialogue);
+
+  // Clicking the crow opens the questions (the `talk to` button is the keyboard equivalent).
+  const onClick = (event: ThreeEvent<MouseEvent>) => {
+    event.stopPropagation();
+    openDialogue();
+  };
+  const setCursor = (cursor: string) => () => {
+    document.body.style.cursor = cursor;
+  };
+
   // Matte blue-black with a faint sheen, shared by every feathered part.
   const feathers = useMemo(
     () => new MeshStandardMaterial({ color: palette.ink, roughness: 0.55, metalness: 0.25 }),
@@ -21,7 +37,21 @@ export default function Crow() {
 
   return (
     // Turned a little toward the field camera.
-    <group name="Crow" position={CROW_POSITION} rotation-y={0.35} scale={1.2}>
+    <group
+      ref={root}
+      name="Crow"
+      position={CROW_POSITION}
+      rotation-y={0.35}
+      scale={1.2}
+      onClick={onClick}
+      onPointerOver={setCursor('pointer')}
+      onPointerOut={setCursor('auto')}
+    >
+      {/* Invisible, bigger click target: the real crow is small on screen. */}
+      <mesh position-y={0.13}>
+        <sphereGeometry args={[0.2, 8, 6]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
       {/* Legs stay outside Body, so breathing doesn't stretch them. */}
       {[-0.025, 0.025].map((x) => (
         <mesh key={x} position={[x, 0.025, 0.01]} material={feathers}>
