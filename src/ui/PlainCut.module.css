@@ -1,0 +1,31 @@
+.plain {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 16px;
+  background: var(--ink);
+  text-align: center;
+}
+
+.name {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 2.5rem;
+}
+
+.back {
+  min-height: 44px;
+  font-size: 0.75rem;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.back:hover {
+  color: var(--lamp);
+}

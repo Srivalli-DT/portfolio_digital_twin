@@ -1,0 +1,38 @@
+.card {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: var(--ink);
+  cursor: pointer;
+}
+
+/* All lines share the same centre spot; only one is visible at a time. */
+.title,
+.line {
+  grid-area: 1 / 1;
+  margin: 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  text-align: center;
+  opacity: 0;
+}
+
+.title {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+}
+
+.line {
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+}
+
+.hint {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  margin: 0;
+  font-size: 0.7rem;
+  color: var(--bone);
+}

@@ -15,3 +15,19 @@ body,
   color: var(--bone);
   font-family: var(--font-mono);
 }
+
+/* Buttons look like plain text by default; each component adds its own style. */
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Keyboard focus is always visible, in the one accent colour. */
+:focus-visible {
+  outline: 1px solid var(--lamp);
+  outline-offset: 4px;
+}

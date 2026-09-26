@@ -1,0 +1,21 @@
+/* Bar height that leaves a 2.39:1 picture, capped at 12vh so phones in portrait keep most of the view. */
+.bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  height: min(max(0px, calc((100vh - 100vw / 2.39) / 2)), 12vh);
+  background: var(--ink);
+  transform: scaleY(0);
+  pointer-events: none;
+}
+
+.top {
+  top: 0;
+  transform-origin: top;
+}
+
+.bottom {
+  bottom: 0;
+  transform-origin: bottom;
+}

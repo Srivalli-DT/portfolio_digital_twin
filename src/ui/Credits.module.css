@@ -1,0 +1,45 @@
+.credits {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 16px;
+  text-align: center;
+  opacity: 0;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.name {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+}
+
+.note {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+.back {
+  min-height: 44px;
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.back:hover {
+  color: var(--lamp);
+}
