@@ -31,6 +31,20 @@
   color: var(--lamp);
 }
 
-.progress {
-  letter-spacing: 0.2em;
+.reels {
+  display: flex;
+}
+
+/* Each ● ○ mark is a full 44px tap target. */
+.reel {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.reel:hover:not(:disabled) {
+  color: var(--lamp);
+}
+
+.reel:disabled {
+  cursor: default;
 }

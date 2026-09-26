@@ -1,10 +1,12 @@
+import { projectFor } from '../content/projects';
 import { site } from '../content/site';
 import { useFilm, type ReelId } from '../state/store';
 import styles from './Header.module.css';
 
 const REELS: ReelId[] = ['I', 'II', 'III'];
 
-// The tiny always-visible header: name on the left, controls and ● ○ ○ progress on the right.
+// The tiny always-visible header: name on the left, controls on the right.
+// The ● ○ ○ marks show progress AND are buttons that open each reel (the canisters' keyboard twin).
 export default function Header() {
   const scene = useFilm((state) => state.scene);
   const sound = useFilm((state) => state.sound);
@@ -12,8 +14,8 @@ export default function Header() {
   const openCredits = useFilm((state) => state.openCredits);
   const toggleSound = useFilm((state) => state.toggleSound);
   const openPlain = useFilm((state) => state.openPlain);
-
-  const progressLabel = site.header.progressLabel.replace('{n}', String(watched.length));
+  const startPuzzle = useFilm((state) => state.startPuzzle);
+  const canOpenReels = scene === 'field' || scene === 'puzzle';
 
   return (
     <header className={styles.header}>
@@ -30,8 +32,26 @@ export default function Header() {
         <button className={styles.link} onClick={openPlain}>
           {site.header.plainCut}
         </button>
-        <span className={styles.progress} role="img" aria-label={progressLabel}>
-          {REELS.map((reel) => (watched.includes(reel) ? '●' : '○')).join(' ')}
+        <span className={styles.reels}>
+          {REELS.map((reel) => {
+            const isWatched = watched.includes(reel);
+            const label = site.header.reelLabel
+              .replace('{reel}', reel)
+              .replace('{title}', projectFor(reel).title)
+              .replace('{state}', isWatched ? site.header.watched : site.header.unwatched);
+            return (
+              <button
+                key={reel}
+                className={styles.reel}
+                onClick={() => startPuzzle(reel)}
+                disabled={!canOpenReels}
+                aria-label={label}
+                title={label}
+              >
+                {isWatched ? '●' : '○'}
+              </button>
+            );
+          })}
         </span>
       </nav>
     </header>

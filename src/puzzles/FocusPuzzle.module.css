@@ -1,0 +1,6 @@
+.slider {
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--lamp);
+  cursor: ew-resize;
+}

@@ -6,6 +6,8 @@ import Canisters from './Canisters';
 import Crow from './Crow';
 import Effects from './Effects';
 import Field from './Field';
+import FocusKnob from './FocusKnob';
+import ProjectedFrame from './ProjectedFrame';
 import Projector from './Projector';
 import Sheet from './Sheet';
 import { palette } from './palette';
@@ -33,7 +35,9 @@ export default function Stage() {
       <CameraRig />
       <Field />
       <Projector />
+      <FocusKnob />
       <Sheet />
+      <ProjectedFrame />
       <Canisters />
       <Crow />
       <Effects grain={quality >= 2} />

@@ -19,16 +19,10 @@ export default function Credits() {
       { opacity: 1, duration: 1, delay: 1.6, ease: EASE_FADE },
     );
     backButton.current?.focus();
-
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') closeCredits();
-    };
-    window.addEventListener('keydown', onKey);
     return () => {
       tween.kill();
-      window.removeEventListener('keydown', onKey);
     };
-  }, [closeCredits]);
+  }, []);
 
   return (
     <section ref={panel} className={styles.credits} aria-label={site.header.credits}>

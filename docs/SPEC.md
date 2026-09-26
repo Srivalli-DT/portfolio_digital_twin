@@ -106,13 +106,13 @@ Rules for all puzzles:
 
 | # | Name | What you do | Feels like | Gives |
 |---|---|---|---|---|
-| I | **Focus** | Drag the lens ring, or use a slider or the ←/→ keys, until the blurred image on the sheet is sharp. A "click" plays when you're within tolerance. | Pulling focus on set | Frame number **7** printed in the corner of the sharp frame |
+| I | **Focus** | Drag the focus knob on the projector's side, or use a slider or the ←/→ keys, until the blurred image on the sheet is sharp. A "click" plays when you're within tolerance. | Pulling focus on set | Frame number **7** printed in the corner of the sharp frame |
 | II | **Splice** | Four film frames of a tiny sequence (the crow landing) are shuffled. Drag or tap to put them in order. | Editing on a Steenbeck | Frame number **2** on the film leader |
 | III | **Canister** | A film canister with a 3-dial number lock. | Opening the last reel | The final reel |
 
 **How they connect:** Puzzle III's code is **7-2-4**: Reel I's frame, Reel II's frame, and the crow's age from the dialogue. So the puzzles, the reels, and the twin all feed each other. If someone opens III first, the crow's hint says: *"The numbers are in the other reels. And ask me my age."* Skipping I or II still shows its number on the solved frame, so the chain never breaks.
 
-**Implementation notes:** Puzzle I is a 3D interaction (the ring on the projector) with an HTML slider as the accessible twin. The image blur is either a blur on the sheet texture or a `DepthOfField` focus change. Puzzles II and III are **HTML overlays** (easier, accessible, work well on mobile), styled like film objects.
+**Implementation notes:** Puzzle I is a 3D interaction (a focus knob on the projector's side, where the puzzle camera can see it) with an HTML slider as the accessible twin. The image blur is either a blur on the sheet texture or a `DepthOfField` focus change. Puzzles II and III are **HTML overlays** (easier, accessible, work well on mobile), styled like film objects.
 
 ## 7. Reels (the 3 projects)
 

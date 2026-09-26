@@ -1,0 +1,10 @@
+.label {
+  padding: 4px 8px;
+  background: color-mix(in srgb, var(--ink) 75%, transparent);
+  color: var(--bone);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  pointer-events: none;
+}

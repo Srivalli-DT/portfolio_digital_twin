@@ -18,12 +18,13 @@ const WINGS = [
 export default function Crow() {
   const root = useRef<Group>(null);
   useCrowBehaviour(root);
-  const openDialogue = useFilm((state) => state.openDialogue);
+  const crowClicked = useFilm((state) => state.crowClicked);
 
-  // Clicking the crow opens the questions (the `talk to` button is the keyboard equivalent).
+  // Clicking the crow opens the questions, or gives a hint during a puzzle.
+  // Keyboard equivalents: the `talk to` button and the puzzle's hint button.
   const onClick = (event: ThreeEvent<MouseEvent>) => {
     event.stopPropagation();
-    openDialogue();
+    crowClicked();
   };
   const setCursor = (cursor: string) => () => {
     document.body.style.cursor = cursor;

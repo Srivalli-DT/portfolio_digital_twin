@@ -24,8 +24,10 @@ export const site = {
     soundOn: 'sound on',
     soundOff: 'sound off',
     plainCut: 'plain cut',
-    // Read by screen readers instead of the ● ○ ○ marks. {n} is replaced with the count.
-    progressLabel: '{n} of 3 reels watched',
+    // Spoken label for each ● ○ ○ reel button.
+    reelLabel: 'Reel {reel}: {title} ({state})',
+    watched: 'watched',
+    unwatched: 'not watched yet',
   },
 
   dialogue: {

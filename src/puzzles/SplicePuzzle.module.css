@@ -1,0 +1,49 @@
+/* Four frames side by side on a strip of dark film. */
+.strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 10px 6px;
+  background: var(--ink);
+  border-top: 4px dotted var(--fog);
+  border-bottom: 4px dotted var(--fog);
+}
+
+.frame {
+  display: block;
+  min-height: 44px;
+  outline-offset: 2px;
+  cursor: grab;
+}
+
+.frame:disabled {
+  cursor: default;
+}
+
+.selected {
+  outline: 2px solid var(--lamp);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.check {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--bone);
+}
+
+.check:hover {
+  border-color: var(--lamp);
+  color: var(--lamp);
+}
+
+.message {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+}

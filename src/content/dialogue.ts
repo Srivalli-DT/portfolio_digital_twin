@@ -2,6 +2,8 @@
 // Each node is one "beat": lines play in order, then the options appear as chips.
 // An option's `next` is another node's id, or 'close' (end the talk), or 'credits' (roll the credits).
 
+import { hints } from './puzzles';
+
 export type DialogueOption = { label: string; next: string };
 
 export type DialogueNode = {
@@ -90,6 +92,13 @@ const nodes: DialogueNode[] = [
   },
 ];
 
+// Puzzle hints (written in puzzles.ts) become nodes too: 'hint-I', 'hint-II', 'hint-III'.
+const hintNodes: DialogueNode[] = Object.entries(hints).map(([reel, hint]) => ({
+  id: `hint-${reel}`,
+  lines: [hint],
+  options: [{ label: 'Thanks', next: 'close' }],
+}));
+
 export const dialogue: Record<string, DialogueNode> = Object.fromEntries(
-  nodes.map((node) => [node.id, node]),
+  [...nodes, ...hintNodes].map((node) => [node.id, node]),
 );

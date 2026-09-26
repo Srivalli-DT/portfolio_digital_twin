@@ -1,0 +1,44 @@
+/* The round tin lid, with the dials set into it. */
+.tin {
+  display: grid;
+  place-items: center;
+  width: 220px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border: 6px double var(--fog);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--moss), var(--ink) 75%);
+}
+
+.dials {
+  display: flex;
+  gap: 8px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.openButton {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--bone);
+}
+
+.tin.open {
+  border-color: var(--lamp);
+}
+
+.openButton:hover {
+  border-color: var(--lamp);
+  color: var(--lamp);
+}
+
+.message {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+}
